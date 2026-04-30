@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Pencil, Trash2, X, Plus, BookOpen, FlaskConical,
-  GraduationCap, Save, CheckCircle2, Layers, ChevronRight,
+  GraduationCap, Save, CheckCircle2, Layers, ChevronRight, Check,
 } from "lucide-react";
 
 interface Department { id: number; name: string; description: string; }
+
+type SectionKey = "overview" | "curriculum" | "departments" | null;
 
 const DEPT_COLORS = [
   "from-amber-500 to-orange-500",
@@ -22,244 +24,258 @@ const DEPT_COLORS = [
 ];
 
 const AdminAcademics = () => {
-  const [curriculum, setCurriculum] = useState(
+  const [activeSection, setActiveSection] = useState<SectionKey>(null);
+  const [savedSection, setSavedSection] = useState<SectionKey>(null);
+
+  // overview stats (editable)
+  const [stats, setStats] = useState({
+    classes: "I – XII",
+    labs: "6+",
+    curriculum: "CBSE",
+  });
+
+  // curriculum & methodology
+  const [curriculumText, setCurriculumText] = useState(
     "CBSE affiliated curriculum from Class I to XII, integrating modern STEM education with Indian cultural values."
   );
   const [methodology, setMethodology] = useState(
     "Activity-based learning, project work, Socratic discussions, and value-based education."
   );
+
+  // departments
   const [departments, setDepartments] = useState<Department[]>([
     { id: 1, name: "Science & Technology", description: "Physics, Chemistry, Biology, Computer Science with fully equipped labs." },
-    { id: 2, name: "Humanities & Arts", description: "History, Geography, Political Science, Fine Arts, and Sanskrit." },
-    { id: 3, name: "Commerce", description: "Accountancy, Business Studies, Economics, and Entrepreneurship." },
+    { id: 2, name: "Humanities & Arts",    description: "History, Geography, Political Science, Fine Arts, and Sanskrit." },
+    { id: 3, name: "Commerce",             description: "Accountancy, Business Studies, Economics, and Entrepreneurship." },
   ]);
-  const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState<Department | null>(null);
-  const [form, setForm] = useState({ name: "", description: "" });
-  const [saved, setSaved] = useState(false);
+  const [deptForm, setDeptForm] = useState({ name: "", description: "" });
+  const [editingDept, setEditingDept] = useState<Department | null>(null);
+  const [showDeptForm, setShowDeptForm] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
-  const openAdd = () => { setEditing(null); setForm({ name: "", description: "" }); setShowForm(true); };
-  const openEdit = (d: Department) => { setEditing(d); setForm({ name: d.name, description: d.description }); setShowForm(true); };
-  const handleSave = () => {
-    if (!form.name.trim()) return;
-    if (editing) setDepartments(departments.map(d => d.id === editing.id ? { ...editing, ...form } : d));
-    else setDepartments([...departments, { id: Date.now(), ...form }]);
-    setShowForm(false);
+  const saveSection = (key: SectionKey) => {
+    setSavedSection(key);
+    setActiveSection(null);
+    setTimeout(() => setSavedSection(null), 2000);
   };
-  const handleDelete = (id: number) => {
-    setDepartments(departments.filter(x => x.id !== id));
-    setDeleteId(null);
+
+  const openAddDept = () => { setEditingDept(null); setDeptForm({ name: "", description: "" }); setShowDeptForm(true); };
+  const openEditDept = (d: Department) => { setEditingDept(d); setDeptForm({ name: d.name, description: d.description }); setShowDeptForm(true); };
+  const handleSaveDept = () => {
+    if (!deptForm.name.trim()) return;
+    if (editingDept) setDepartments(prev => prev.map(d => d.id === editingDept.id ? { ...editingDept, ...deptForm } : d));
+    else setDepartments(prev => [...prev, { id: Date.now(), ...deptForm }]);
+    setShowDeptForm(false);
+  };
+
+  // ── reusable section card ─────────────────────────────────────────────────
+  const SectionCard = ({
+    id, icon: Icon, iconColor, title, summary, children,
+  }: {
+    id: SectionKey; icon: React.ElementType; iconColor: string;
+    title: string; summary: string; children: React.ReactNode;
+  }) => {
+    const isOpen = activeSection === id;
+    const wasSaved = savedSection === id;
+    return (
+      <div className={`rounded-xl border transition-all duration-200 overflow-hidden bg-card ${isOpen ? "border-primary/40 shadow-warm" : "border-gold/20"}`}>
+        <button
+          type="button"
+          onClick={() => setActiveSection(isOpen ? null : id)}
+          className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-muted/30 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${isOpen ? "bg-primary text-white" : iconColor}`}>
+              {wasSaved ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+            </div>
+            <div>
+              <p className="font-semibold text-secondary text-sm">{title}</p>
+              {!isOpen && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{summary}</p>}
+            </div>
+          </div>
+          <ChevronRight className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />
+        </button>
+
+        {isOpen && (
+          <div className="px-5 pb-5 pt-1 border-t border-gold/15 space-y-4">
+            {children}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
-    <AdminPageShell title="Academics" subtitle="Manage curriculum, departments and teaching methodology">
+    <AdminPageShell title="Academics" subtitle="Click any section to edit it">
+      <div className="space-y-3">
 
-      {/* ── Stats row ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { icon: GraduationCap, label: "Total Departments", value: departments.length, color: "from-primary to-orange-400" },
-          { icon: BookOpen, label: "Classes", value: "I – XII", color: "from-blue-500 to-indigo-500" },
-          { icon: FlaskConical, label: "Labs", value: "6+", color: "from-emerald-500 to-teal-500" },
-          { icon: Layers, label: "Curriculum", value: "CBSE", color: "from-gold to-amber-400" },
-        ].map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
-            className="relative overflow-hidden rounded-2xl border border-gold/20 bg-card p-5 shadow-soft"
-          >
-            <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${s.color}`} />
-            <div className={`inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br ${s.color} text-white shadow-md mb-3`}>
-              <s.icon className="h-4 w-4" />
-            </div>
-            <div className="font-display text-2xl font-bold text-secondary">{s.value}</div>
-            <div className="text-xs text-muted-foreground mt-0.5">{s.label}</div>
-          </motion.div>
-        ))}
-      </div>
+        {/* ── Overview / Stats ── */}
+        <SectionCard
+          id="overview"
+          icon={GraduationCap}
+          iconColor="bg-primary/10 text-primary"
+          title="Academic Overview"
+          summary={`Classes ${stats.classes} · ${stats.labs} Labs · ${stats.curriculum}`}
+        >
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              { key: "classes",    label: "Classes Range",  icon: GraduationCap },
+              { key: "labs",       label: "Number of Labs", icon: FlaskConical },
+              { key: "curriculum", label: "Board / Curriculum", icon: Layers },
+            ].map(({ key, label, icon: Icon }) => (
+              <div key={key} className="space-y-1.5">
+                <Label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <Icon className="h-3.5 w-3.5" /> {label}
+                </Label>
+                <Input
+                  value={stats[key as keyof typeof stats]}
+                  onChange={e => setStats({ ...stats, [key]: e.target.value })}
+                  className="border-gold/25 focus:border-primary/50"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-3 pt-1">
+            <Button onClick={() => saveSection("overview")} variant="hero" size="sm" className="gap-1.5">
+              <Save className="h-3.5 w-3.5" /> Save
+            </Button>
+            <Button onClick={() => setActiveSection(null)} variant="outline" size="sm">
+              <X className="h-3.5 w-3.5 mr-1" /> Cancel
+            </Button>
+          </div>
+        </SectionCard>
 
-      {/* ── Curriculum & Methodology ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="rounded-2xl border border-gold/20 bg-card shadow-soft overflow-hidden"
-      >
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-gold/15 bg-gradient-to-r from-primary/5 to-transparent">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-saffron text-white shadow-gold">
-            <BookOpen className="h-4 w-4" />
-          </div>
-          <div>
-            <h2 className="font-display text-base font-semibold text-secondary">Academic Overview</h2>
-            <p className="text-xs text-muted-foreground">Curriculum and teaching methodology</p>
-          </div>
-        </div>
-        <div className="p-6 grid md:grid-cols-2 gap-5">
-          <div className="space-y-2">
-            <Label className="text-sm font-semibold text-secondary">Curriculum Overview</Label>
+        {/* ── Curriculum & Methodology ── */}
+        <SectionCard
+          id="curriculum"
+          icon={BookOpen}
+          iconColor="bg-blue-100 text-blue-600"
+          title="Curriculum & Teaching Methodology"
+          summary={curriculumText}
+        >
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Curriculum Overview</Label>
             <Textarea
               rows={4}
-              value={curriculum}
-              onChange={e => setCurriculum(e.target.value)}
-              className="resize-none border-gold/25 focus:border-primary/50 bg-background/60"
+              value={curriculumText}
+              onChange={e => setCurriculumText(e.target.value)}
+              className="resize-none border-gold/25 focus:border-primary/50"
               placeholder="Describe the curriculum..."
             />
           </div>
-          <div className="space-y-2">
-            <Label className="text-sm font-semibold text-secondary">Teaching Methodology</Label>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Teaching Methodology</Label>
             <Textarea
               rows={4}
               value={methodology}
               onChange={e => setMethodology(e.target.value)}
-              className="resize-none border-gold/25 focus:border-primary/50 bg-background/60"
+              className="resize-none border-gold/25 focus:border-primary/50"
               placeholder="Describe the teaching approach..."
             />
           </div>
-        </div>
-        <div className="px-6 pb-5">
-          <Button
-            onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2500); }}
-            variant="hero"
-            size="sm"
-            className="gap-2"
-          >
-            {saved ? <><CheckCircle2 className="h-4 w-4" /> Saved!</> : <><Save className="h-4 w-4" /> Save Changes</>}
-          </Button>
-        </div>
-      </motion.div>
-
-      {/* ── Departments ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.22 }}
-        className="rounded-2xl border border-gold/20 bg-card shadow-soft overflow-hidden"
-      >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gold/15 bg-gradient-to-r from-primary/5 to-transparent">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 text-white shadow-md">
-              <Layers className="h-4 w-4" />
-            </div>
-            <div>
-              <h2 className="font-display text-base font-semibold text-secondary">Departments</h2>
-              <p className="text-xs text-muted-foreground">{departments.length} department{departments.length !== 1 ? "s" : ""} configured</p>
-            </div>
+          <div className="flex gap-3 pt-1">
+            <Button onClick={() => saveSection("curriculum")} variant="hero" size="sm" className="gap-1.5">
+              <Save className="h-3.5 w-3.5" /> Save
+            </Button>
+            <Button onClick={() => setActiveSection(null)} variant="outline" size="sm">
+              <X className="h-3.5 w-3.5 mr-1" /> Cancel
+            </Button>
           </div>
-          <Button onClick={openAdd} variant="hero" size="sm" className="gap-1.5">
-            <Plus className="h-3.5 w-3.5" /> Add Department
-          </Button>
-        </div>
+        </SectionCard>
 
-        {/* Add / Edit form */}
-        <AnimatePresence>
-          {showForm && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden"
-            >
-              <div className="px-6 py-5 border-b border-gold/15 bg-primary/[0.03]">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-secondary text-sm">
-                    {editing ? "Edit Department" : "New Department"}
-                  </h3>
-                  <button onClick={() => setShowForm(false)} className="p-1 rounded hover:bg-muted text-muted-foreground">
-                    <X className="h-4 w-4" />
+        {/* ── Departments ── */}
+        <SectionCard
+          id="departments"
+          icon={Layers}
+          iconColor="bg-violet-100 text-violet-600"
+          title="Departments"
+          summary={`${departments.length} department${departments.length !== 1 ? "s" : ""} — ${departments.map(d => d.name).join(", ")}`}
+        >
+          {/* Add / Edit inline form */}
+          <AnimatePresence>
+            {showDeptForm && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <div className="rounded-lg border border-primary/20 bg-primary/[0.03] p-4 space-y-3 mb-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+                      {editingDept ? "Edit Department" : "New Department"}
+                    </span>
+                    <button onClick={() => setShowDeptForm(false)}><X className="h-4 w-4 text-muted-foreground" /></button>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Department Name</Label>
+                      <Input value={deptForm.name} onChange={e => setDeptForm({ ...deptForm, name: e.target.value })} placeholder="e.g. Science & Technology" className="border-gold/25" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Description</Label>
+                      <Input value={deptForm.description} onChange={e => setDeptForm({ ...deptForm, description: e.target.value })} placeholder="Subjects covered..." className="border-gold/25" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveDept} variant="hero" size="sm" className="gap-1.5">
+                      <Save className="h-3.5 w-3.5" /> {editingDept ? "Update" : "Add"}
+                    </Button>
+                    <Button onClick={() => setShowDeptForm(false)} variant="outline" size="sm">Cancel</Button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Department list */}
+          <div className="divide-y divide-gold/10 rounded-lg border border-gold/20 overflow-hidden">
+            {departments.length === 0 && (
+              <p className="py-8 text-center text-sm text-muted-foreground">No departments yet.</p>
+            )}
+            {departments.map((d, i) => (
+              <div key={d.id} className="group flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
+                <div className={`shrink-0 h-8 w-8 rounded-lg bg-gradient-to-br ${DEPT_COLORS[i % DEPT_COLORS.length]} flex items-center justify-center text-white shadow-sm`}>
+                  <BookOpen className="h-3.5 w-3.5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-secondary text-sm">{d.name}</div>
+                  <div className="text-xs text-muted-foreground truncate">{d.description}</div>
+                </div>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                  <button onClick={() => openEditDept(d)} className="p-1.5 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary">
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => setDeleteId(d.id)} className="p-1.5 rounded hover:bg-red-50 text-muted-foreground hover:text-red-500">
+                    <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Department Name</Label>
-                    <Input
-                      value={form.name}
-                      onChange={e => setForm({ ...form, name: e.target.value })}
-                      placeholder="e.g. Science & Technology"
-                      className="border-gold/25 focus:border-primary/50"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Description</Label>
-                    <Input
-                      value={form.description}
-                      onChange={e => setForm({ ...form, description: e.target.value })}
-                      placeholder="Brief description of subjects..."
-                      className="border-gold/25 focus:border-primary/50"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button onClick={handleSave} variant="hero" size="sm" className="gap-1.5">
-                    <Save className="h-3.5 w-3.5" /> {editing ? "Update" : "Add Department"}
-                  </Button>
-                  <Button onClick={() => setShowForm(false)} variant="outline" size="sm">Cancel</Button>
-                </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            ))}
+          </div>
 
-        {/* Department list */}
-        <div className="divide-y divide-gold/10">
-          {departments.length === 0 && (
-            <div className="py-12 text-center text-muted-foreground text-sm">
-              No departments yet. Click "Add Department" to get started.
-            </div>
-          )}
-          {departments.map((d, i) => (
-            <motion.div
-              key={d.id}
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.06 }}
-              className="group flex items-center gap-4 px-6 py-4 hover:bg-muted/30 transition-colors"
-            >
-              {/* Colour dot */}
-              <div className={`shrink-0 h-10 w-10 rounded-xl bg-gradient-to-br ${DEPT_COLORS[i % DEPT_COLORS.length]} flex items-center justify-center text-white shadow-sm`}>
-                <BookOpen className="h-4 w-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-secondary text-sm">{d.name}</div>
-                <div className="text-xs text-muted-foreground mt-0.5 truncate">{d.description}</div>
-              </div>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                <button
-                  onClick={() => openEdit(d)}
-                  className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
-                  title="Edit"
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  onClick={() => setDeleteId(d.id)}
-                  className="p-1.5 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-red-500 transition-colors"
-                  title="Delete"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground/30 shrink-0" />
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+          <div className="flex gap-3 pt-1">
+            <Button onClick={openAddDept} variant="hero" size="sm" className="gap-1.5">
+              <Plus className="h-3.5 w-3.5" /> Add Department
+            </Button>
+            <Button onClick={() => saveSection("departments")} variant="outline" size="sm" className="gap-1.5">
+              <CheckCircle2 className="h-3.5 w-3.5" /> Done
+            </Button>
+          </div>
+        </SectionCard>
+
+      </div>
 
       {/* Delete confirm modal */}
       <AnimatePresence>
         {deleteId !== null && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
           >
             <motion.div
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.92, opacity: 0 }}
+              initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
               className="bg-card rounded-2xl border border-gold/20 p-6 w-full max-w-sm shadow-warm"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mx-auto mb-4">
@@ -268,14 +284,13 @@ const AdminAcademics = () => {
               <h3 className="font-display text-center text-secondary font-semibold mb-1">Delete Department?</h3>
               <p className="text-sm text-muted-foreground text-center mb-5">This action cannot be undone.</p>
               <div className="flex gap-3">
-                <Button onClick={() => handleDelete(deleteId)} size="sm" className="flex-1 bg-red-500 hover:bg-red-600 text-white">Delete</Button>
+                <Button onClick={() => { setDepartments(prev => prev.filter(d => d.id !== deleteId)); setDeleteId(null); }} size="sm" className="flex-1 bg-red-500 hover:bg-red-600 text-white">Delete</Button>
                 <Button onClick={() => setDeleteId(null)} variant="outline" size="sm" className="flex-1">Cancel</Button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
     </AdminPageShell>
   );
 };

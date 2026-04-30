@@ -167,7 +167,7 @@ const Index = () => {
                   {String(i + 1).padStart(2, "0")}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground/90 leading-snug">{a.title}</p>
+                  <p className="text-sm font-semibold text-foreground/90 leading-snug">{language === "hi" && a.titleHi ? a.titleHi : a.title}</p>
                   <div className="mt-1.5 flex items-center gap-2">
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
                       a.category === "Urgent" ? "bg-red-100 text-red-600" :

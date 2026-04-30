@@ -23,7 +23,7 @@ const filters: { value: Category; key: "notices.filterAll" | "notices.filterScho
 ];
 
 const Notices = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [filter, setFilter] = useState<Category>("All");
 
   const filtered = filter === "All" ? notices : notices.filter(n => n.category === filter);
@@ -83,8 +83,8 @@ const Notices = () => {
                     </span>
                     <span className="text-xs text-muted-foreground">{notice.date}</span>
                   </div>
-                  <h3 className="font-display text-lg text-secondary">{notice.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{notice.body}</p>
+                  <h3 className="font-display text-lg text-secondary">{language === "hi" && notice.titleHi ? notice.titleHi : notice.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{language === "hi" && notice.bodyHi ? notice.bodyHi : notice.body}</p>
                   {notice.attachment && (
                     <a
                       href={notice.attachment}

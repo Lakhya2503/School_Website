@@ -4,6 +4,8 @@ export interface Announcement {
   id: number;
   title: string;
   body: string;
+  titleHi?: string;
+  bodyHi?: string;
   date: string;
   category: "General" | "Exam" | "Event" | "Holiday" | "Urgent";
 }
@@ -15,6 +17,7 @@ export interface CalendarEvent {
   endDate?: string;
   category: "Exam" | "Result" | "Holiday" | "Meeting" | "Event" | "Leave";
   description: string;
+  descriptionHi?: string;
   location?: string;
 }
 
@@ -22,9 +25,12 @@ export interface Notice {
   id: number;
   title: string;
   body: string;
+  titleHi?: string;
+  bodyHi?: string;
   category: "School Notice" | "Government Notice" | "Urgent Notice";
   date: string;
   attachment?: string;
+  attachmentName?: string;
 }
 
 export interface FeeRecord {

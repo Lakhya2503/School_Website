@@ -11,7 +11,7 @@ import heroCalendar from "@/assets/hero-calendar.jpg";
 import heroContact from "@/assets/hero-contact.jpg";
 import heroHome from "@/assets/hero-home.jpg";
 import schoolHome from "@/assets/schoolhome.png";
-import { defaultFacilities, loadAboutFacilities } from "@/lib/aboutContent";
+import { defaultFacilities, loadAboutFacilities, loadAboutContent, defaultAboutContent, type AboutContent } from "@/lib/aboutContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const getInitials = (name: string) =>
@@ -23,8 +23,13 @@ const getInitials = (name: string) =>
     .join("");
 
 const About = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [facilities, setFacilities] = useState(defaultFacilities);
+  const [content, setContent] = useState<AboutContent>(defaultAboutContent);
+
+  // helpers to pick the right language variant
+  const c = (enKey: keyof AboutContent, hiKey: keyof AboutContent) =>
+    language === "hi" ? (content[hiKey] as string) || (content[enKey] as string) : (content[enKey] as string);
 
   const timeline = [
     { year: "2005", title: t("about.timeline.2005.title"), desc: t("about.timeline.2005.desc") },
@@ -60,6 +65,7 @@ const About = () => {
 
   useEffect(() => {
     setFacilities(loadAboutFacilities());
+    setContent(loadAboutContent());
   }, []);
 
   return (
@@ -88,21 +94,21 @@ const About = () => {
             icon: Heart,
             label: "01",
             title: t("about.mission.title"),
-            desc: t("about.mission.desc"),
+            desc: c("mission", "missionHi"),
             footer: t("about.mission.footer"),
           },
           {
             icon: Eye,
             label: "02",
             title: t("about.vision.title"),
-            desc: t("about.vision.desc"),
+            desc: c("vision", "visionHi"),
             footer: t("about.vision.footer"),
           },
           {
             icon: Star,
             label: "03",
             title: t("about.values.title"),
-            desc: t("about.values.desc"),
+            desc: c("values", "valuesHi"),
             footer: t("about.values.footer"),
           },
         ].map((m, i) => (
@@ -270,8 +276,8 @@ const About = () => {
               <div className="relative w-48">
                 <div className="rounded-2xl overflow-hidden border border-gold/30 shadow-lg bg-muted">
                   <img
-                    src="/assets/principal-placeholder.jpg"
-                    alt="Dr. Arvind Krishnan"
+                    src={content.principalPhoto || "/assets/principal-placeholder.jpg"}
+                    alt={content.principalName}
                     className="w-full h-60 object-cover object-top"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                   />
@@ -289,10 +295,10 @@ const About = () => {
               <div className="w-full">
                 <div className="text-primary/60 text-5xl font-serif leading-none mb-1">"</div>
                 <p className="text-foreground/85 italic text-lg md:text-xl leading-relaxed">
-                  {t("about.principal.quote")}
+                  {c("principalMessage", "principalMessageHi")}
                 </p>
                 <div className="mt-8 border-t border-gold/20 pt-5">
-                  <div className="text-primary font-semibold text-base md:text-lg">{t("about.principal.name")}</div>
+                  <div className="text-primary font-semibold text-base md:text-lg">{c("principalName", "principalNameHi")}</div>
                   <div className="text-xs text-muted-foreground mt-1">{t("about.principal.role")}</div>
                 </div>
               </div>

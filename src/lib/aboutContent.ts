@@ -55,3 +55,48 @@ export const saveAboutFacilities = (facilities: AboutFacility[]) => {
 
   localStorage.setItem(ABOUT_FACILITIES_STORAGE_KEY, JSON.stringify(facilities));
 };
+
+// ─── About dynamic content (bilingual) ────────────────────────────────────────
+export interface AboutContent {
+  history: string;            historyHi: string;
+  mission: string;            missionHi: string;
+  vision: string;             visionHi: string;
+  values: string;             valuesHi: string;
+  principalName: string;      principalNameHi: string;
+  principalMessage: string;   principalMessageHi: string;
+  principalPhoto: string;
+}
+
+const ABOUT_CONTENT_KEY = "vidyalaya-about-content";
+
+export const defaultAboutContent: AboutContent = {
+  history:            "Founded in 2005, Vidyalaya has been a beacon of holistic education rooted in Bharatiya values.",
+  historyHi:          "2005 में स्थापित, विद्यालय भारतीय मूल्यों में निहित समग्र शिक्षा का एक प्रकाश स्तंभ रहा है।",
+  mission:            "To nurture curious minds and noble hearts through a blend of modern education and ancient wisdom.",
+  missionHi:          "आधुनिक शिक्षा और प्राचीन ज्ञान के मिश्रण से जिज्ञासु मन और उदार हृदय का पोषण करना।",
+  vision:             "To be the leading institution that produces well-rounded, culturally grounded, and globally competent citizens.",
+  visionHi:           "एक ऐसी अग्रणी संस्था बनना जो सर्वांगीण, सांस्कृतिक रूप से समृद्ध और वैश्विक रूप से सक्षम नागरिक तैयार करे।",
+  values:             "Integrity, Respect, Excellence, Service, Cultural Pride",
+  valuesHi:           "सत्यनिष्ठा, सम्मान, उत्कृष्टता, सेवा, सांस्कृतिक गर्व",
+  principalName:      "Dr. Arvind Krishnan",
+  principalNameHi:    "डॉ. अरविंद कृष्णन",
+  principalMessage:   "Education is not just about academics — it is about shaping character, building resilience, and igniting the spirit of inquiry.",
+  principalMessageHi: "शिक्षा केवल अकादमिक नहीं है — यह चरित्र निर्माण, लचीलापन बनाने और हर बच्चे में जिज्ञासा की भावना जगाने के बारे में है।",
+  principalPhoto:     "",
+};
+
+export const loadAboutContent = (): AboutContent => {
+  if (typeof window === "undefined") return defaultAboutContent;
+  try {
+    const raw = localStorage.getItem(ABOUT_CONTENT_KEY);
+    if (!raw) return defaultAboutContent;
+    return { ...defaultAboutContent, ...JSON.parse(raw) };
+  } catch {
+    return defaultAboutContent;
+  }
+};
+
+export const saveAboutContent = (content: AboutContent) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(ABOUT_CONTENT_KEY, JSON.stringify(content));
+};
