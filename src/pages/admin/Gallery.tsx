@@ -10,11 +10,11 @@ import {
 
 // ─── assets (Vite static imports) ─────────────────────────────────────────────
 import heroHome      from "@/assets/hero-home.jpg";
-import heroAcademics from "@/assets/hero-academics.jpg";
-import heroAdmissions from "@/assets/hero-admissions.jpg";
-import heroCalendar  from "@/assets/hero-calendar.jpg";
-import heroContact   from "@/assets/hero-contact.jpg";
-import heroAbout     from "@/assets/hero-about.jpg";
+import heroAcademics from "@/assets/acdemics.png";
+import heroAdmissions from "@/assets/admission.png";
+import heroCalendar  from "@/assets/calenderpage.png";
+import heroContact   from "@/assets/conatctus.png";
+import heroAbout     from "@/assets/aboutus.png";
 import schoolHome    from "@/assets/schoolhome.png";
 
 // ─── types ─────────────────────────────────────────────────────────────────────

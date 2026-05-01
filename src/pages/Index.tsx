@@ -12,11 +12,11 @@ import {
 } from "lucide-react";
 import heroHome from "@/assets/newherosection.png";
 import heroHomeMobile from "@/assets/mobilevertficateimage.png";
-import heroAbout from "@/assets/hero-about.jpg";
-import heroAcademics from "@/assets/hero-academics.jpg";
-import heroAdmissions from "@/assets/hero-admissions.jpg";
-import heroCalendar from "@/assets/hero-calendar.jpg";
-import heroContact from "@/assets/hero-contact.jpg";
+import heroAbout from "@/assets/aboutus.png";
+import heroAcademics from "@/assets/acdemics.png";
+import heroAdmissions from "@/assets/admission.png";
+import heroCalendar from "@/assets/calenderpage.png";
+import heroContact from "@/assets/conatctus.png";
 import heroHero from "@/assets/hero-home.jpg";
 import schoolHome from "@/assets/schoolhome.png";
 import { announcements, calendarEvents } from "@/data/schoolData";
@@ -51,13 +51,13 @@ const testimonialKeys = [
 ] as const;
 
 const galleryItems = [
-  { src: heroHero,       labelKey: "home.gallery.l1" },
-  { src: heroAcademics,  labelKey: "home.gallery.l2" },
-  { src: heroAdmissions, labelKey: "home.gallery.l3" },
-  { src: heroCalendar,   labelKey: "home.gallery.l4" },
-  { src: heroContact,    labelKey: "home.gallery.l5" },
-  { src: heroAbout,      labelKey: "home.gallery.l6" },
-  { src: schoolHome,     labelKey: "home.gallery.l7" },
+  { src: heroHero,       labelKey: "home.gallery.l1", sanskrit: "विद्यालयः सर्वेषां गृहम्" },
+  { src: heroAcademics,  labelKey: "home.gallery.l2", sanskrit: "ज्ञानं परमं बलम्" },
+  { src: heroAdmissions, labelKey: "home.gallery.l3", sanskrit: "प्रवेशः नवजीवनस्य द्वारम्" },
+  { src: heroCalendar,   labelKey: "home.gallery.l4", sanskrit: "उत्सवः जीवनस्य सारः" },
+  { src: heroContact,    labelKey: "home.gallery.l5", sanskrit: "सङ्घे शक्तिः कलौ युगे" },
+  { src: heroAbout,      labelKey: "home.gallery.l6", sanskrit: "शरीरमाद्यं खलु धर्मसाधनम्" },
+  { src: schoolHome,     labelKey: "home.gallery.l7", sanskrit: "गृहं हि प्रथमा पाठशाला" },
 ] as const;
 
 // ─── animated counter ──────────────────────────────────────────────────────────
@@ -251,7 +251,7 @@ const Index = () => {
         <MandalaBg className="absolute -right-64 -top-20 h-[30rem] w-[30rem] opacity-35 hidden lg:block z-0" />
         <div className="relative z-10">
           <SectionHeader
-            eyebrow={t("home.features.eyebrow")}
+            eyebrow="॥ विद्यालय विशेषता ॥"
             title={t("home.features.title")}
             subtitle={t("home.features.sub")}
           />
@@ -298,9 +298,10 @@ const Index = () => {
       </section>
 
       {/* ── Gallery Marquee ── */}
-      <section className="py-16 bg-background overflow-hidden">
+      <section className="pt-4 pb-12 bg-background overflow-hidden">
         <div className="container-narrow mb-8">
           <SectionHeader
+            eyebrow="॥ विद्यालय जीवनम् ॥"
             title={t("home.gallery.title")}
             subtitle={t("home.gallery.sub")}
           />
@@ -312,7 +313,7 @@ const Index = () => {
           style={{ maskImage: "linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)" }}
         >
           {/* pause on hover via CSS group */}
-          <div className="flex gap-4 animate-[gallery-scroll_35s_linear_infinite] hover:[animation-play-state:paused]"
+          <div className="flex gap-4 animate-[gallery-scroll_35s_linear_infinite]"
             style={{ width: "max-content" }}
           >
             {[...galleryItems, ...galleryItems].map((item, i) => (
@@ -391,25 +392,37 @@ const Index = () => {
 
       {/* ── CTA ── */}
       <section className="container-narrow pb-10 md:pb-12">
-        <div className="relative overflow-hidden rounded-3xl bg-[linear-gradient(135deg,hsl(22_88%_48%)_0%,hsl(38_95%_61%)_42%,hsl(43_95%_84%)_100%)] p-10 md:p-16 text-secondary shadow-temple ornate-frame">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-festive p-10 md:p-16 text-secondary shadow-temple ornate-frame">
           <MandalaBg
-            className="absolute -right-20 -top-20 w-80 h-80 opacity-60"
-            style={{
-              filter: "sepia(1) saturate(4) hue-rotate(340deg) brightness(0.65) contrast(1.2)",
-              mixBlendMode: "multiply",
-            }}
+            className="absolute -right-20 -top-20 w-80 h-80 opacity-40"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_10%,hsl(43_95%_78%/0.18)_45%,transparent_80%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,hsl(43_95%_88%/0.20),transparent_34%),radial-gradient(circle_at_85%_0%,hsl(22_88%_52%/0.12),transparent_30%)]" />
+          <MandalaBg
+            className="absolute -left-16 bottom-0 w-64 h-64 opacity-20"
+            spin={false}
+          />
+          {/* subtle inner light */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,hsl(43_95%_88%/0.35),transparent_55%),radial-gradient(ellipse_at_80%_80%,hsl(22_88%_52%/0.15),transparent_45%)]" />
+          {/* top shimmer line */}
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+
           <div className="relative flex flex-col items-center text-center">
-            <Award className="h-10 w-10 text-secondary mb-4" />
-            <h3 className="font-display text-3xl md:text-5xl font-bold mb-4">{t("home.cta.title")}</h3>
-            <p className="text-lg opacity-90 mb-8 max-w-xl">{t("home.cta.sub")}</p>
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/30 border border-white/40 shadow-warm backdrop-blur-sm">
+              <Award className="h-7 w-7 text-secondary" />
+            </div>
+            <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-secondary/25 bg-white/25 px-4 py-1.5 text-xs font-semibold tracking-[0.18em] text-secondary/80 uppercase backdrop-blur-sm">
+              ✦ Admissions Open 2026–27 ✦
+            </span>
+            <h3 className="font-display text-3xl md:text-5xl font-bold mb-4 text-secondary">{t("home.cta.title")}</h3>
+            <p className="text-lg text-secondary/80 mb-8 max-w-xl leading-relaxed">{t("home.cta.sub")}</p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button asChild variant="hero" size="xl">
+              <Button asChild size="xl"
+                className="bg-secondary text-primary-foreground hover:bg-secondary/90 shadow-[0_4px_20px_hsl(22_88%_30%/0.35)] hover:shadow-[0_6px_28px_hsl(22_88%_30%/0.45)] transition-all duration-300 font-semibold"
+              >
                 <Link to="/admissions">{t("home.cta.apply")}</Link>
               </Button>
-              <Button asChild variant="hero" size="xl" className="opacity-90 hover:opacity-100">
+              <Button asChild size="xl"
+                className="border-2 border-secondary/40 bg-white/25 text-secondary hover:bg-white/40 backdrop-blur-sm font-semibold transition-all duration-300"
+              >
                 <Link to="/contact">{t("home.cta.contact")}</Link>
               </Button>
             </div>

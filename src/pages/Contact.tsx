@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { toast } from "sonner";
-import heroContact from "@/assets/hero-contact.jpg";
+import heroContact from "@/assets/conatctus.png";
 
 const Contact = () => {
   const onSubmit = (e: React.FormEvent) => {
@@ -31,7 +31,7 @@ const Contact = () => {
         sanskrit="॥ अतिथि देवो भव ॥"
         subtitle="Parents, students, and guests are always welcome. Come meet us on campus or reach out for admissions and support."
         image={heroContact}
-        size="full"
+        size="default"
       />
 
       <section className="container-narrow py-20 grid lg:grid-cols-5 gap-10">

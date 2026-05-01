@@ -19,14 +19,14 @@ export const PageHero = ({ title, sanskrit, subtitle, image, mobileImage, align 
   const isHindi = language === "hi";
 
   return (
-  <section className={`relative w-full overflow-x-clip bg-gradient-temple flex items-center ${
+  <section className={`relative w-full overflow-hidden bg-gradient-temple flex items-center ${
     size === "full"
-      ? "min-h-[100svh] md:min-h-[88vh]"
+      ? "min-h-[80svh] md:min-h-[82vh]"
       : size === "compact"
-      ? "min-h-[70vh] md:min-h-[62vh]"
-      : "min-h-[80vh] md:min-h-[72vh]"
+      ? "min-h-[44vh] md:min-h-[52vh]"
+      : "min-h-[52vh] md:min-h-[60vh]"
   }`}>
-    {/* Background image with layered gradients */}
+    {/* Background image */}
     <div className="absolute inset-0 w-full h-full">
       {mobileImage ? (
         <picture className="absolute inset-0 h-full w-full">
@@ -36,7 +36,7 @@ export const PageHero = ({ title, sanskrit, subtitle, image, mobileImage, align 
             alt=""
             aria-hidden
             style={{ objectPosition: imagePosition }}
-            className={`absolute inset-0 h-full w-full opacity-95 animate-fade-in ${
+            className={`absolute inset-0 h-full w-full opacity-90 animate-fade-in ${
               imageFit === "contain" ? "object-contain object-center" : "object-cover object-center"
             }`}
           />
@@ -47,20 +47,20 @@ export const PageHero = ({ title, sanskrit, subtitle, image, mobileImage, align 
           alt=""
           aria-hidden
           style={{ objectPosition: imagePosition }}
-          className={`absolute inset-0 h-full w-full opacity-95 animate-fade-in ${
-            imageFit === "contain" ? "object-contain object-center" : "object-cover object-top md:object-center"
+          className={`absolute inset-0 h-full w-full opacity-90 animate-fade-in ${
+            imageFit === "contain" ? "object-contain object-center" : "object-cover object-[center_30%]"
           }`}
         />
       )}
-      {/* Strong dark scrim so text is always readable */}
-      <div className="absolute inset-0 bg-black/70" />
-      {/* Warm gradient overlay for brand feel */}
-      <div className="absolute inset-0 bg-[linear-gradient(160deg,hsl(20_60%_10%/0.75)_0%,hsl(20_40%_12%/0.45)_60%,transparent_100%)]" />
+      {/* Dark scrim */}
+      <div className="absolute inset-0 bg-black/60" />
+      {/* Warm gradient overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(160deg,hsl(20_60%_10%/0.65)_0%,hsl(20_40%_12%/0.35)_60%,transparent_100%)]" />
       {/* Festive radial glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(22_88%_52%/0.18),transparent_55%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(22_88%_52%/0.15),transparent_55%)]" />
     </div>
 
-    <div className={`container-narrow relative w-full z-10 ${size === "compact" ? "py-10 md:py-14" : size === "full" ? "py-16 md:py-24" : "py-14 md:py-20"} ${align === "center" ? "text-center" : ""}`}>
+    <div className={`container-narrow relative w-full z-10 ${size === "compact" ? "py-8 md:py-12" : size === "full" ? "py-14 md:py-20" : "py-10 md:py-16"} ${align === "center" ? "text-center" : ""}`}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -72,7 +72,7 @@ export const PageHero = ({ title, sanskrit, subtitle, image, mobileImage, align 
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="font-sanskrit text-lg md:text-2xl tracking-wide text-gold mb-4 drop-shadow-[0_2px_8px_hsl(20_40%_12%/0.6)]"
+            className="font-sanskrit text-base md:text-2xl tracking-wide text-gold mb-3 drop-shadow-[0_2px_8px_hsl(20_40%_12%/0.6)]"
           >
             {sanskrit}
           </motion.div>
@@ -82,7 +82,7 @@ export const PageHero = ({ title, sanskrit, subtitle, image, mobileImage, align 
           className={`font-bold drop-shadow-[0_10px_24px_hsl(20_40%_12%/0.62)] ${
             isHindi ? "font-sanskrit" : "font-display"
           } ${
-            size === "compact" ? "text-3xl md:text-5xl lg:text-[3.4rem]" : "text-4xl md:text-6xl lg:text-[4rem]"
+            size === "compact" ? "text-2xl md:text-5xl lg:text-[3.4rem]" : "text-3xl md:text-6xl lg:text-[4rem]"
           }`}
           style={{ lineHeight: isHindi ? 1.45 : 1.2 }}
         >
@@ -113,12 +113,12 @@ export const PageHero = ({ title, sanskrit, subtitle, image, mobileImage, align 
           )}
         </h1>
 
-        {/* Animated divider with sparkle */}
+        {/* Animated divider */}
         <motion.div
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className={`${isHindi ? "mt-2" : "mt-6"} flex items-center gap-3 ${align === "center" ? "justify-center" : ""}`}
+          className={`${isHindi ? "mt-2" : "mt-4"} flex items-center gap-3 ${align === "center" ? "justify-center" : ""}`}
         >
           <span className="h-px w-12 bg-gradient-to-r from-transparent to-gold" />
           <span className="text-gold animate-flame text-lg">✦</span>
@@ -132,8 +132,8 @@ export const PageHero = ({ title, sanskrit, subtitle, image, mobileImage, align 
             transition={{ delay: 0.5, duration: 0.7 }}
             className={`text-white/90 leading-relaxed drop-shadow-[0_4px_14px_rgba(0,0,0,0.8)] ${
               size === "compact"
-                ? `${isHindi ? "mt-2" : "mt-5"} text-base md:text-lg`
-                : `${isHindi ? "mt-3" : "mt-6"} text-lg md:text-xl`
+                ? `${isHindi ? "mt-2" : "mt-3"} text-sm md:text-lg`
+                : `${isHindi ? "mt-3" : "mt-4"} text-base md:text-xl`
             }`}
           >
             {subtitle}
@@ -145,7 +145,7 @@ export const PageHero = ({ title, sanskrit, subtitle, image, mobileImage, align 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.6 }}
-            className={`mt-8 flex flex-wrap gap-4 overflow-x-clip ${align === "center" ? "justify-center" : ""}`}
+            className={`mt-6 flex flex-wrap gap-4 overflow-x-clip ${align === "center" ? "justify-center" : ""}`}
           >
             {children}
           </motion.div>
@@ -153,15 +153,15 @@ export const PageHero = ({ title, sanskrit, subtitle, image, mobileImage, align 
       </motion.div>
     </div>
 
-    {/* Bottom ornate wave divider */}
-    <div className="absolute bottom-0 left-0 right-0 z-10 leading-none overflow-hidden">
+    {/* Bottom wave — fill matches page background, -1px bottom removes the gap line */}
+    <div className="absolute bottom-[-1px] left-0 right-0 z-10 leading-none">
       <svg
-        viewBox="0 0 1440 120"
-        className="block h-12 w-full md:h-16 fill-background"
+        viewBox="0 0 1440 80"
+        className="block h-8 w-full md:h-12 fill-background"
         preserveAspectRatio="none"
         aria-hidden
       >
-        <path d="M0,70 C220,38 420,42 620,60 C820,78 1040,82 1440,54 L1440,120 L0,120 Z" />
+        <path d="M0,40 C240,10 480,60 720,40 C960,20 1200,55 1440,30 L1440,80 L0,80 Z" />
       </svg>
     </div>
   </section>

@@ -4,7 +4,7 @@ import { PageHero } from "@/components/PageHero";
 import { SectionHeader } from "@/components/SectionHeader";
 import { calendarEvents } from "@/data/schoolData";
 import { CalendarDays, MapPin } from "lucide-react";
-import heroCalendar from "@/assets/hero-calendar.jpg";
+import heroCalendar from "@/assets/calenderpage.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type Filter = "All" | "Exam" | "Result" | "Holiday" | "Meeting" | "Event" | "Leave";

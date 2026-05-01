@@ -14,7 +14,7 @@ import {
   ArrowRight, CheckCircle2, Sparkles, Phone, Mail, ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
-import heroAdmissions from "@/assets/hero-admissions.jpg";
+import heroAdmissions from "@/assets/admission.png";
 
 /* ─── Static config (icons / colours only) ─────────────── */
 
@@ -201,7 +201,7 @@ const Admissions = () => {
         sanskrit="॥ स्वागतम् ॥"
         subtitle={t("admissions.heroSubtitle")}
         image={heroAdmissions}
-        size="full"
+        size="default"
       />
 
       {/* ── Process Steps ── */}

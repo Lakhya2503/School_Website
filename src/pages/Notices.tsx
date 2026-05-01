@@ -4,7 +4,7 @@ import { PageHero } from "@/components/PageHero";
 import { SectionHeader } from "@/components/SectionHeader";
 import { notices } from "@/data/schoolData";
 import { FileText, Download, AlertTriangle, Building2, School } from "lucide-react";
-import heroCalendar from "@/assets/hero-calendar.jpg";
+import heroNotices from "@/assets/notice.png";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 type Category = "All" | "School Notice" | "Government Notice" | "Urgent Notice";
@@ -34,7 +34,7 @@ const Notices = () => {
         title={t("notices.heroTitle")}
         sanskrit="॥ सूचना ॥"
         subtitle={t("notices.heroSubtitle")}
-        image={heroCalendar}
+        image={heroNotices}
       />
 
       <section className="container-narrow py-16">
