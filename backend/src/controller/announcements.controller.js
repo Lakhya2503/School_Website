@@ -1,14 +1,16 @@
-import asyncHandler from '../utils/asyncHandler';
-import ApiResponse from '../utils/ApiResponse';
-import Announcement from '../models/announcements.model';
-import ApiError from '../utils/ApiError';
+import asyncHandler from '../utils/asyncHandler.js';
+import ApiResponse from '../utils/ApiResponse.js';
+import Announcement from '../models/announcements.model.js';
+import ApiError from '../utils/ApiError.js';
+import { announcementCategoryEnums } from '../utils/constant.js';
+import uploadCloudinary from '../utils/cloudinary.js';
 
 
 const createNewAnnouncement = asyncHandler(async(req,res)=>{
 
-    const { title, category, date, content } = req.body
+    const { title, category, date, content, attachmentLink } = req.body
 
-      const parsedDate = new Date(date);
+    const parsedDate = new Date(date);
 
     const announcementData = {
       title,
@@ -16,6 +18,32 @@ const createNewAnnouncement = asyncHandler(async(req,res)=>{
       date : parsedDate,
       content
     }
+
+    if(!announcementCategoryEnums.includes(category)) {
+      throw new ApiError(404, "Category is not found")
+    }
+
+    if(attachmentLink) {
+      announcementData.attachment = attachmentLink
+    }
+
+
+    if(req.files) {
+          const { attachment } = req.files
+          if(attachment) {
+            const attachmentPath = attachment[0].path
+            if(!attachmentPath) {
+              throw new ApiError(404, "Attachement can't find")
+            }
+            const attachmentLink = await uploadCloudinary(attachmentPath)
+
+            if(!attachmentLink) {
+              throw new ApiError(404,"didn't upload image")
+            }
+              announcementData.attachment = attachmentLink.secure_url
+          }
+    }
+
     const announcements = await Announcement.create(announcementData)
 
     if(!announcementData) {
@@ -45,6 +73,22 @@ const updateAnnouncement = asyncHandler(async (req, res) => {
 
     updateData.date = parsedDate;
   }
+
+   if(req.files) {
+          const { attachment } = req.files
+          console.log("attachment", attachment)
+          if(attachment) {
+            const attachmentPath = attachment[0].path
+            if(!attachmentPath) {
+              throw new ApiError(404, "Attachement can't find")
+            }
+            const attachmentLink = await uploadCloudinary(attachmentPath)
+            if(!attachmentLink) {
+              throw new ApiError(404,"didn't upload image")
+            }
+              updateData.attachment = attachmentLink.url
+          }
+    }
 
   const updatedAnnouncement = await Announcement.findByIdAndUpdate(
     announcementId,

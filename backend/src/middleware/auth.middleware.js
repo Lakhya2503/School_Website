@@ -49,7 +49,7 @@ export const verifyAdmin = asyncHandler(async (req, res, next) => {
     req.user = user;
   }
 
-  if (req.user.role !== "admin") {
+  if (req.user.role !== "Admin") {
     throw new ApiError(403, "Only admin can perform this action");
   }
 

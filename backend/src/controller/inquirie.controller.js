@@ -4,7 +4,7 @@ import Inquirie from '../models/inquirie.model.js';
 import ApiError from '../utils/ApiError.js';
 
 const newInquirie = asyncHandler(async(req,res)=>{
-    const { fullName, email,subject, message} = req.body
+    const { fullName, email, subject, message} = req.body
 
     const inquirieData = {
         fullName, email,subject, message, isRead : false
@@ -39,9 +39,13 @@ const updateInquirie = asyncHandler(async(req,res)=>{
   return res.status(200).json(new ApiResponse(200, {}, "Quirie read"))
 })
 
-const getInquirie = asyncHandler(async(req,res)=>{
+const getInquiries = asyncHandler(async(req,res)=>{
 
   const  inquiries = await Inquirie.find().lean()
+
+  /*
+      TODO : ADD A ERROR FOR WHEN IQNIRIE NOT FOUND
+  */
 
   return res.status(200).json(new ApiResponse(200, inquiries, "fetch all inquiries successfully"))
 })
@@ -64,7 +68,7 @@ const deleteInquirie = asyncHandler(async(req,res)=>{
 
 export {
   newInquirie,
-  getInquirie,
+  getInquiries,
   deleteInquirie,
   updateInquirie
 }

@@ -21,7 +21,7 @@ const newAdmission = asyncHandler(async (req,res) => {
           phon
      }
 
-     if(aditionalMessage) return admissionData.aditionalMessage = aditionalMessage
+     if(aditionalMessage)  admissionData.aditionalMessage = aditionalMessage
 
 
      const admission = await Admission.create(admissionData)

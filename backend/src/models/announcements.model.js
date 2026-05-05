@@ -19,6 +19,9 @@ const announcementSchema = new mongoose.Schema(
       content : {
         type : String,
         default : ""
+      },
+      attachment : {
+        type : String
       }
    },
   { timestamps : true }

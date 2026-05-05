@@ -13,6 +13,7 @@ import {
   authRegisterValidator
 } from "../validators/auth.validators.js";
 import { validate } from "../validators/validate.js";
+import { verifyAdmin } from "../middleware/auth.middleware.js";
 
 
 const router = Router()
@@ -28,18 +29,18 @@ router.route("/login")
             loginUser)
 
 router.route("/logout")
-            .get(logoutUser)
+            .get(verifyAdmin, logoutUser)
 
 router.route("/update-profile")
             .put(updateUserProfile)
 
 router.route("/get")
-            .get(getUser)
+            .get(verifyAdmin, getUser)
 
 router.route("/change-current/password")
             .put(authChangeCurrentPasswordValidator(),
              validate,
+             verifyAdmin,
              changeCurrentPassword)
-
 
 export default router;

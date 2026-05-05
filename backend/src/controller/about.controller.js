@@ -96,9 +96,9 @@ const updateSchoolHistory = asyncHandler(async(req,res)=>{
   }
 
 
-  if(description) return updateData.description = description
+  if(description) updateData.description = description
 
-  if(coreValues.lenth) return updateData.vision = vision
+  if(coreValues.lenth)updateData.vision = vision
 
   if(Object.values(updateData).length > 0) {
     throw new ApiError(400, "can not be empty please ensert the value")
@@ -129,8 +129,8 @@ const updateMissionVision = asyncHandler(async(req,res)=>{
 
   const updateData = { }
 
-  if(mission) return updateData.mission = mission
-  if(vision) return updateData.vision = vision
+  if(mission)  updateData.mission = mission
+  if(vision)  updateData.vision = vision
 
   if(Object.values(updateData).length > 0) {
     throw new ApiError(400, "can not be empty please ensert the value")
@@ -158,9 +158,9 @@ const updatePrincipleMessage = asyncHandler(async(req,res)=>{
 
   const updateData = { }
 
-  if(name) return updateData.name = name
-  if(photoUrl) return updateData.photoUrl = photoUrl
-  if(message) return updateData.message = message
+  if(name)  updateData.name = name
+  if(photoUrl)  updateData.photoUrl = photoUrl
+  if(message)  updateData.message = message
 
   if(Object.values(updateData).length > 0) {
     throw new ApiError(400, "can not be empty please ensert the value")
@@ -194,7 +194,7 @@ const addCampusFacility = asyncHandler(async(req,res)=>{
     throw new ApiError("name and description are required")
   }
 
-  if(imageUrl) return campusFacility.imageUrl = imageUrl
+  if(imageUrl)  campusFacility.imageUrl = imageUrl
 
     const campusAndFacility = await About.findOneAndUpdate(
       {},
@@ -228,7 +228,7 @@ const updateCampusFacility = asyncHandler(async(req,res)=>{
     throw new ApiError("name and description are required")
   }
 
-  if(imageUrl) return updateData.imageUrl = imageUrl
+  if(imageUrl)  updateData.imageUrl = imageUrl
 
   const  updatecampusandfacility = await About.findOneAndUpdate(
     {

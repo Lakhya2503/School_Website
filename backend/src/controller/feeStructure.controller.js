@@ -1,7 +1,7 @@
-import asyncHandler from '../utils/asyncHandler';
-import ApiResponse from '../utils/ApiResponse';
-import ApiError from '../utils/ApiError';
-import FeeStructure from '../models/feeStructure.model';
+import asyncHandler from '../utils/asyncHandler.js';
+import ApiResponse from '../utils/ApiResponse.js';
+import ApiError from '../utils/ApiError.js';
+import FeeStructure from '../models/feeStructure.model.js';
 
 const addClassFees = asyncHandler(async(req,res)=>{
 
@@ -25,11 +25,19 @@ const addClassFees = asyncHandler(async(req,res)=>{
         otherCharges
     }
 
-  if(typeof tutionFee === "string") return classFeeData.tutionFee = Number(tutionFee)
-  if(typeof admissionFee === "string") return classFeeData.admissionFee = Number(admissionFee)
-  if(typeof examFee === "string") return classFeeData.examFee = Number(examFee)
-  if(typeof otherCharges === "string") return classFeeData.otherCharges=  Number(otherCharges)
+  if(typeof tutionFee === "string") {
+    classFeeData.tutionFee = Number(tutionFee)
+  }
+  if(typeof admissionFee === "string")  {
+    classFeeData.admissionFee = Number(admissionFee)
+  }
+  if(typeof examFee === "string")  {
+    classFeeData.examFee = Number(examFee)
+  }
 
+  if(typeof otherCharges === "string") {
+    classFeeData.otherCharges=  Number(otherCharges)
+  }
 
     const createClassFee = await FeeStructure.create(classFeeData)
 
@@ -42,7 +50,7 @@ const addClassFees = asyncHandler(async(req,res)=>{
 
 const updateClassFee = asyncHandler(async(req,res)=>{
 
-  const { classId } = req.body
+  const { classId } = req.params
   const {
       classOrGrade,
       tutionFee,
@@ -57,13 +65,17 @@ const updateClassFee = asyncHandler(async(req,res)=>{
     throw new ApiError(404, "class fee structure didn't find")
   }
 
-  const updateData = {}
+      const updateData = {}
 
-  if(classOrGrade) return updateData.classOrGrade = classOrGrade
-  if(tutionFee &&  typeof tutionFee === "string") return classFeeData.tutionFee = Number(tutionFee)
-  if(admissionFee && typeof admissionFee === "string") return classFeeData.admissionFee = Number(admissionFee)
-  if(examFee && typeof examFee === "string") return classFeeData.examFee = Number(examFee)
-  if(otherCharges && typeof otherCharges === "string") return classFeeData.otherCharges=  Number(otherCharges)
+        if(classOrGrade) updateData.classOrGrade = classOrGrade
+
+        if(tutionFee && typeof tutionFee === "number"  || tutionFee && typeof tutionFee === "string" ) updateData.tutionFee = Number(tutionFee)
+
+        if(admissionFee && typeof admissionFee === "number" || admissionFee && typeof admissionFee === "string") updateData.admissionFee = Number(admissionFee)
+        if(admissionFee && typeof admissionFee === "number" || examFee && typeof examFee === "string") updateData.examFee = Number(examFee)
+
+        if(otherCharges && typeof otherCharges === "number" || otherCharges && typeof otherCharges === "string") updateData.otherCharges=  Number(otherCharges)
+
 
     const updateFeeStructure = await FeeStructure.findByIdAndUpdate(
       classId,
@@ -81,7 +93,7 @@ const updateClassFee = asyncHandler(async(req,res)=>{
 
 })
 
-const getFullOfFeeStructure = asyncHandler(async(req,res)=>{
+const getFullOfFeeStructure = asyncHandler(async(_,res)=>{
 
   const getfullstructure = await FeeStructure.find().lean()
 
@@ -90,7 +102,7 @@ const getFullOfFeeStructure = asyncHandler(async(req,res)=>{
 
 const deleteFeeStructreClass = asyncHandler(async(req,res)=>{
 
-    const { classId } = req.body
+    const { classId } = req.params
 
     const classFeeStructre = await FeeStructure.findById(classId)
 

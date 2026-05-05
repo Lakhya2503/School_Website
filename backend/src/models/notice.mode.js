@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { noticeCategory, noticeCategoryEnums } from '../utils/constant';
+import { noticeCategory, noticeCategoryEnums } from '../utils/constant.js';
 
 const noticeSchema = new mongoose.Schema(
     {

@@ -40,8 +40,8 @@ const updateDepartment = asyncHandler(async(req,res)=>{
 
    const departmentUpdateData = {}
 
-    if(departmentName) return departmentUpdateData.departmentName = departmentName
-    if(description) return departmentUpdateData.description = description
+    if(departmentName)  departmentUpdateData.departmentName = departmentName
+    if(description)  departmentUpdateData.description = description
 
   const department = await Department.findByIdAndUpdate(
       departmentId, {
