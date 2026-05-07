@@ -27,7 +27,8 @@ export const eventCategory = {
   EXAM : "Exam",
   HOLIDAY : "Holiday",
   MEETING : "Meeting",
-  LEAVE : "Leave"
+  LEAVE : "Leave",
+  SPORTS : "Sports"
 }
 
 export const eventCategoryEnums = Object.values(eventCategory)
