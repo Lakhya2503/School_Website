@@ -11,6 +11,8 @@ const asyncHandler = (requestHandler, timeout = 10000) => {
         Promise.resolve(requestHandler(req, res, next))
             .then(() => clearTimeout(timer))
             .catch((err) => {
+              console.log("errror",err);
+
                 clearTimeout(timer);
                 next(err);
             });

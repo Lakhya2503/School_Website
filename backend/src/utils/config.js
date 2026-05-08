@@ -1,7 +1,8 @@
 import  { configDotenv } from 'dotenv'
 
 configDotenv({
-  path : '.env'
+  path : '.env',
+  quiet : true
 })
 
 const portNumber = Number(process.env.PORT)

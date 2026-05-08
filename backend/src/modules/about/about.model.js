@@ -36,7 +36,7 @@ const principleMessageSchema = new mongoose.Schema(
             },
             photoUrl : {
               type : String,
-              required : true
+              default : ""
             },
             message : {
               type : String,

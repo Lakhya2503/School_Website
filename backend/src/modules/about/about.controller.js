@@ -1,7 +1,7 @@
-import asyncHandler from '../../utils/asyncHandler';
-import ApiResponse from '../../utils/ApiResponse';
-import About from '../models/about.model';
-import ApiError from '../../utils/ApiError';
+import asyncHandler from '../../utils/asyncHandler.js';
+import ApiResponse from '../../utils/ApiResponse.js';
+import About from './about.model.js';
+import ApiError from '../../utils/ApiError.js';
 
 const createAboutSection = asyncHandler(async(req,res)=>{
 
@@ -10,7 +10,12 @@ const createAboutSection = asyncHandler(async(req,res)=>{
       missionVision ,
       principleMessage ,
       campusFacility
-     } = req.body
+     } = req
+
+     console.log(
+          "req.body" ,req
+     );
+
 
      const schoolData = {
         description : schoolHistory.description
@@ -64,7 +69,7 @@ const createAboutSection = asyncHandler(async(req,res)=>{
      }
 
 
-  return res.status(201).json(new ApiResponse(201, about, "create About section successfully"))
+  // return res.status(201).json(new ApiResponse(201, about, "create About section successfully"))
 })
 
 const getAbout = asyncHandler(async(req,res)=>{
