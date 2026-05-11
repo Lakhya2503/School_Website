@@ -4,6 +4,11 @@ import ApiResponse from "../../utils/ApiResponse.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import { userRoles } from "../../utils/constant.js";
 import { fieldNotFound } from "../../utils/helper.js";
+import { createAboutSection } from "../about/about.controller.js";
+import { newAcademics } from "../academic/academic.controller.js";
+import { campusFacility, curriculumOverview, department, missionVision, principleMessage, schoolHistory, teachingMethodology } from "../../utils/defaulData.js";
+import About from "../about/about.model.js";
+import Academics from '../academic/academic.model.js'
 
 const options = {
   httpOnly: true,
@@ -48,6 +53,40 @@ const registerUser = asyncHandler(async (req, res) => {
     role: secretKey && userRoles.ADMIN,
     email,
   };
+
+
+  // ! -when admin register then create two other field also like about and acadimics
+
+  const about = await About.find()
+  const acadimics = await Academics.find()
+
+  // if(about.length === 0) {
+    //  await createAboutSection(
+    // {schoolHistory, missionVision, principleMessage, campusFacility}
+    // )
+  // }
+
+    newAcademics(
+          {curriculumOverview, teachingMethodology, department}
+      )
+
+    const user = await User.create(userData);
+
+  // if(acadimics.length === 0) {
+  //      newAcadimics(
+  //         {curriculumOverview, teachingMethodology, deparment}
+  //     )
+  // }
+
+
+  //   if (!user) {
+  //   throw new ApiError(500, "Internal server error try again some time");
+  // }
+
+  /*
+        TODO : when user register and then return a log or email
+        for verifing user are not login with dummy credentials
+      */
 
   return res
     .status(201)

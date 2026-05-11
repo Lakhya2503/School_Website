@@ -26,8 +26,8 @@ const teachingMethodologySchema = new mongoose.Schema(
             type : String,
             required : true
           },
-          techiningMethodology : {
-            type : String,
+          TechiningMethodology : {
+            type : [String],
             required : true
     }
   } , {
@@ -37,6 +37,7 @@ const teachingMethodologySchema = new mongoose.Schema(
 
 const departmentSchema = new mongoose.Schema(
   {
+      department : {
           departmentName : {
             type : String,
             required : true
@@ -45,6 +46,7 @@ const departmentSchema = new mongoose.Schema(
             type : String,
             required : true
           }
+    }
   } , {
       timestamps : true
   }

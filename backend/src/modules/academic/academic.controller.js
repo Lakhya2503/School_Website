@@ -1,103 +1,106 @@
 import ApiError from "../../utils/ApiError.js";
 import ApiResponse from "../../utils/ApiResponse.js";
-import asyncHandler from "./../../utils/asyncHandler.js";
+import asyncHandler from "../../utils/asyncHandler.js";
 import Academics from "./academic.model.js";
 
-const addNewAcadimecs = asyncHandler(async (req, res) => {
-  const { curriculumOverview, teachingMethodology, department } = req.body;
+const newAcademics = asyncHandler(async (req, res) => {
+  const { curriculumOverview, teachingMethodology, department } = req;
 
-  if (
-    (!curriculumOverview && !curriculumOverview.classRang) ||
-    !curriculumOverview.classRang ||
-    !curriculumOverview.bordOrCurriculum
-  ) {
-    throw new ApiError(400, "curriculumOverview all fields are required");
-  }
+  let campusAndFacility = [];
 
-  if (
-    (!teachingMethodology && !teachingMethodology.curriculumOverview) ||
-    !teachingMethodology.techiningMethodology
-  ) {
-    throw new ApiError(400, "teachingMethodology all fields are required");
-  }
-
-  let departmentArray = [];
-
-  if (
-    (department && department.length > 0 && department.departmentName) ||
-    department.description
-  ) {
-    departmentArray.push(department);
+  if (campusFacility && campusFacility.lenth > 0) {
+    campusAndFacility.push(campusAndFacility);
   } else {
-    department = departmentArray;
+    campusAndFacility = [];
   }
 
-  const createNewAcdemics = await Academics.create({
-    curriculumOverview: curriculumOverview,
-    teachingMethodology: teachingMethodology,
-    department: departmentArray,
+  const acadims = await Academics.create({
+    curriculumOverview,
+    teachingMethodology,
+    department,
   });
 
   return res
+    .status(201)
+    .json(
+      new ApiResponse(201, acadims, "New academic record created successfully"),
+    );
+});
+
+
+const updateDepartment = asyncHandler(async (req, res) => {
+  const { departmentName, description } = req.body;
+  const { departmentId } = req.params;
+
+  const departmentUpdateData = {};
+
+  if (departmentName)
+    departmentUpdateData["department.departmentName"] = departmentName;
+  if (description) departmentUpdateData["department.description"] = description;
+
+  const department = await Academics.findOneAndUpdate(
+    { "department._id": departmentId },
+    { $set: departmentUpdateData },
+    { new: true },
+  );
+
+  if (!department) {
+    throw new ApiError(400, "Department not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, department, "Department updated successfully"));
+});
+
+
+const getAllAcademics = asyncHandler(async (req, res) => {
+  const academics = await Academics.find();
+  return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        createNewAcdemics,
-        "new academics create successfully",
+        academics,
+        "Fetched all academic records successfully",
       ),
     );
 });
 
-const updateCurriculumOverview =  asyncHandler(async (req, res) => {
 
-  // ? -- add the update curriculums method
+const getAcademicById = asyncHandler(async (req, res) => {
+  const { academicId } = req.params;
+  const academic = await Academics.findById(academicId);
+
+  if (!academic) {
+    throw new ApiError(404, "Academic record not found");
+  }
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updateCurriculeme, "Curriculum update successfully"),
+      new ApiResponse(200, academic, "Fetched academic record successfully"),
     );
 });
 
-const updateTeachingMethodology = await asyncHandler(async (req, res) => {
-  // ? -- add the update TeachingMethodology method
+
+const deleteAcademic = asyncHandler(async (req, res) => {
+  const { academicId } = req.params;
+  const academic = await Academics.findByIdAndDelete(academicId);
+
+  if (!academic) {
+    throw new ApiError(404, "Academic record not found");
+  }
 
   return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        updateCurriculeme,
-        "update Teaching Methodology successfully",
-      ),
-    );
-});
-
-const updateDepartment = await asyncHandler(async (req, res) => {
-  // ? -- add the update Department method
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, updateCurriculeme, "Update Department successfully"),
-    );
-});
-
-const deleteDepartment = await asyncHandler(async (req, res) => {
-  // ? -- add the delete department method
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, updateCurriculeme, "delete Department successfully"),
-    );
+    .status(204)
+    .json(new ApiResponse(204, {}, "Academic record deleted successfully"));
 });
 
 export {
-  addNewAcadimecs,
-  updateCurriculumOverview,
+  deleteAcademic,
+  getAcademicById,
+  getAllAcademics,
+  newAcademics,
   updateDepartment,
-  updateTeachingMethodology,
-  deleteDepartment,
 };
