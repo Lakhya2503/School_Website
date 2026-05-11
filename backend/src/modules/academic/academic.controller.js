@@ -7,15 +7,17 @@ const newAcademics = asyncHandler(async (req, res) => {
   const { curriculumOverview, teachingMethodology, department } = req.body;
 
   console.log({
-    curriculumOverview, teachingMethodology, department
+    curriculumOverview,
+    teachingMethodology,
+    department,
   });
 
-   if(Object.values(curriculumOverview).some((field)=> field === "" ) ){
-        throw new ApiError(404, "Curriculum Overview all fields required")
+  if (Object.values(curriculumOverview).some((field) => field === "")) {
+    throw new ApiError(404, "Curriculum Overview all fields required");
   }
 
-  if(Object.values(teachingMethodology).some((field)=> field === "" ) ){
-        throw new ApiError(404, "Teaching Methodology all fields required")
+  if (Object.values(teachingMethodology).some((field) => field === "")) {
+    throw new ApiError(404, "Teaching Methodology all fields required");
   }
 
   let departmentArray = [];
@@ -28,7 +30,7 @@ const newAcademics = asyncHandler(async (req, res) => {
   const acadims = await Academics.create({
     curriculumOverview,
     teachingMethodology,
-    department : departmentArray,
+    department: departmentArray,
   });
 
   return res
@@ -51,59 +53,135 @@ const getAllAcademics = asyncHandler(async (req, res) => {
     );
 });
 
+const updateCurriculumOverview = asyncHandler(async (req, res) => {
+  const { classRang, numberOfLabes, bordOrCurriculum } = req.body;
 
-const updateCurriculumOverview = asyncHandler(async(req,res)=>{
+  const updateData = {};
 
-  const { classRang, numberOfLabes, bordOrCurriculum } = req.body
+  if (classRang) updateData.classRang = classRang;
+  if (numberOfLabes) updateData.numberOfLabes = numberOfLabes;
+  if (bordOrCurriculum) updateData.bordOrCurriculum = bordOrCurriculum;
 
-  const updateData = {}
-
-  if(classRang) updateData.classRang = classRang
-  if(numberOfLabes) updateData.numberOfLabes = numberOfLabes
-  if(bordOrCurriculum) updateData.bordOrCurriculum = bordOrCurriculum
-
-  if(Object.values(updateData).lenght === 0) {
-     throw new ApiError(400, "minimum one field can enter")
+  if (Object.values(updateData).lenght === 0) {
+    throw new ApiError(400, "minimum one field can enter");
   }
 
   const updateCurriculumOveriew = await Academics.findOneAndUpdate(
     {},
     {
-        $set : {
-          curriculumOverview : updateData
-        }
+      curriculumOverview: updateData,
     },
     {
-      runValidators : true,
-      new : true
-    }
-  )
+      runValidators: true,
+      new: true,
+    },
+  );
 
+  if (!updateCurriculumOveriew) {
+    throw new ApiError(404, "Curriculum Overiew didn't updated");
+  }
 
-    if(!updateCurriculumOveriew) {
-      throw new ApiError(404, "Curriculum Overiew didn't updated")
-    }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updateCurriculumOveriew.curriculumOverview,
+        "Update Curriculum Overview Successfully",
+      ),
+    );
+});
 
+const updateTeachingMethodology = asyncHandler(async (req, res) => {
+  const { techiningMethodology, curriculumOverview } = req.body;
 
-  return res.status(200).json(new ApiResponse(200, {}, "Update Curriculum Overview Successfully"))
-})
+  const updateData = {};
 
+  if (techiningMethodology)
+    updateData.techiningMethodology = techiningMethodology;
+  if (curriculumOverview) updateData.curriculumOverview = curriculumOverview;
 
+  if (Object.values(updateData).lenght === 0) {
+    throw new ApiError(400, "minimum one field can enter");
+  }
+
+  const updateTeachingMethodology = await Academics.findOneAndUpdate(
+    {},
+    {
+      teachingMethodology: updateData,
+    },
+    {
+      runValidators: true,
+      new: true,
+    },
+  );
+
+  if (!updateTeachingMethodology) {
+    throw new ApiError(404, "Curriculum Overiew didn't updated");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updateTeachingMethodology.teachingMethodology,
+        "Update Curriculum Overview Successfully",
+      ),
+    );
+});
+
+const addNewDepartment = asyncHandler(async (req, res) => {
+  const { departmentName, description } = req.body;
+
+  const department = await Academics.findOneAndUpdate(
+    {},
+    {
+      $push: {
+        department: {
+          departmentName: departmentName,
+          description: description,
+        },
+      },
+    },
+    {
+      runValidators: true,
+      new: true,
+    },
+  );
+
+  if (!department) {
+    throw new ApiError(400, "can't add new Department");
+  }
+
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(
+        201,
+        department.department,
+        "new Department create successfully",
+      ),
+    );
+});
 
 const updateDepartment = asyncHandler(async (req, res) => {
   const { departmentName, description } = req.body;
   const { departmentId } = req.params;
 
-  const departmentUpdateData = {};
+  const updateData = {};
 
-  if (departmentName)
-    departmentUpdateData["department.departmentName"] = departmentName;
-  if (description) departmentUpdateData["department.description"] = description;
+  if (departmentName) updateData.departmentName = departmentName;
+  if (description) updateData.description = description;
+
+  // if (Object.values(updateData).length === 0) {
+  //   throw new ApiError(400, "At least one field is required to update");
+  // }
 
   const department = await Academics.findOneAndUpdate(
     { "department._id": departmentId },
-    { $set: departmentUpdateData },
-    { new: true },
+    { $set: updateData },
+    { new: true, runValidators: true },
   );
 
   if (!department) {
@@ -112,46 +190,49 @@ const updateDepartment = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, department, "Department updated successfully"));
-});
-
-
-
-
-
-const getAcademicById = asyncHandler(async (req, res) => {
-  const { academicId } = req.params;
-  const academic = await Academics.findById(academicId);
-
-  if (!academic) {
-    throw new ApiError(404, "Academic record not found");
-  }
-
-  return res
-    .status(200)
     .json(
-      new ApiResponse(200, academic, "Fetched academic record successfully"),
+      new ApiResponse(
+        200,
+        department.department,
+        "Department updated successfully",
+      ),
     );
 });
 
+const deleteDepartment = asyncHandler(async (req, res) => {
+  const { departmentId } = req.params;
 
-const deleteAcademic = asyncHandler(async (req, res) => {
-  const { academicId } = req.params;
-  const academic = await Academics.findByIdAndDelete(academicId);
+  const department = await Academics.findOne({
+    "department._id": departmentId,
+  });
 
-  if (!academic) {
-    throw new ApiError(404, "Academic record not found");
+  console.log("department", department);
+
+  if (!department) {
+    throw new ApiError(404, "Department  not found");
   }
 
+  await Academics.findOneAndUpdate(
+    {},
+    {
+      $pull: {
+        department: { _id: departmentId },
+      },
+    },
+    { new: true },
+  );
+
   return res
-    .status(204)
-    .json(new ApiResponse(204, {}, "Academic record deleted successfully"));
+    .status(200)
+    .json(new ApiResponse(200, {}, "Delete Department successfully"));
 });
 
 export {
-  deleteAcademic,
-  getAcademicById,
+  addNewDepartment,
+  deleteDepartment,
   getAllAcademics,
   newAcademics,
+  updateCurriculumOverview,
   updateDepartment,
+  updateTeachingMethodology,
 };

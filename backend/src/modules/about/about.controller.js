@@ -301,7 +301,6 @@ const updateCampusFacility = asyncHandler(async (req, res) => {
     );
 });
 
-
 const updateFaculityMember = asyncHandler(async (req, res) => {
     const { facultiMemberId } = req.params;
     const { fullName, role, subject, experience, photoUrl } = req.body
@@ -337,7 +336,6 @@ const updateFaculityMember = asyncHandler(async (req, res) => {
         new ApiResponse(200, faculityMemberUpdate, "Campus Facility Updated Successfully")
     );
 });
-
 
 const deleteCampusFacility = asyncHandler(async(req,res)=> {
 

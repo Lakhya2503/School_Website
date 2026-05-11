@@ -1,11 +1,12 @@
 import { Router } from 'express'
-import { getAllAcademics, newAcademics } from './academic.controller.js';
+import { addNewDepartment, deleteDepartment, getAllAcademics, newAcademics, updateCurriculumOverview, updateDepartment, updateTeachingMethodology } from './academic.controller.js';
 
 const router = Router()
 
-//  !! -- remove before production only route
-
+//  !! -- remove before production only route this route
 router.route('/create-academics').post(newAcademics)
+
+
 
 // ? -------------- get academics --------------
 router.route("/fetch-academics").get(getAllAcademics)
@@ -15,38 +16,20 @@ router.route("/fetch-academics").get(getAllAcademics)
 router.route("/update-curriculum-overview").put(updateCurriculumOverview)
 
 
-// // ? -------------- update mission vision --------------
-// router.route("/update-mission-vision").put(updateMissionVision)
+// ? -------------- update teaching methodology --------------
+router.route("/update-teaching-methodology").put(updateTeachingMethodology)
 
 
-// // ? -------------- update principle message --------------
-// router.route("/update-principle-message").put(updatePrincipleMessage)
+// ? -------------- add department  --------------
+router.route("/add-department").put(addNewDepartment)
 
 
-// // ? -------------- add campuse facility --------------
-// router.route("/add-campuse-facility").put(addCampusFacility)
+// ? -------------- update department  --------------
+router.route("/update-department/:departmentId").put(updateDepartment)
 
 
-// // ? -------------- add faculity Member --------------
-// router.route("/add-faculity-member").put(addFaculityMember)
-
-
-// // ? -------------- update campuse facility --------------
-// router.route("/update-campuse-facility/:facilityId").put(updateCampusFacility)
-
-
-// // ? -------------- update faculity member --------------
-// router.route("/update-faculity-member/:facultiMemberId").put(updateFaculityMember)
-
-
-// // ? -------------- delete campuse facility --------------
-// router.route("/delete-campuse-facility/:facilityId").delete(deleteCampusFacility)
-
-
-// // ? -------------- delete faculity member --------------
-// router.route("/delete-faculity-member/:facultiMemberId").delete(deleteFaculityMember)
-
-
+// ? -------------- delete department  --------------
+router.route("/delete-department/:departmentId").delete(deleteDepartment)
 
 
 
