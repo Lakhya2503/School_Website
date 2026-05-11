@@ -4,20 +4,31 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import Academics from "./academic.model.js";
 
 const newAcademics = asyncHandler(async (req, res) => {
-  const { curriculumOverview, teachingMethodology, department } = req;
+  const { curriculumOverview, teachingMethodology, department } = req.body;
 
-  let campusAndFacility = [];
+  console.log({
+    curriculumOverview, teachingMethodology, department
+  });
 
-  if (campusFacility && campusFacility.lenth > 0) {
-    campusAndFacility.push(campusAndFacility);
+   if(Object.values(curriculumOverview).some((field)=> field === "" ) ){
+        throw new ApiError(404, "Curriculum Overview all fields required")
+  }
+
+  if(Object.values(teachingMethodology).some((field)=> field === "" ) ){
+        throw new ApiError(404, "Teaching Methodology all fields required")
+  }
+
+  let departmentArray = [];
+  if (department || Object.values(department).length > 0) {
+    departmentArray.push(department);
   } else {
-    campusAndFacility = [];
+    departmentArray = [];
   }
 
   const acadims = await Academics.create({
     curriculumOverview,
     teachingMethodology,
-    department,
+    department : departmentArray,
   });
 
   return res
@@ -26,6 +37,57 @@ const newAcademics = asyncHandler(async (req, res) => {
       new ApiResponse(201, acadims, "New academic record created successfully"),
     );
 });
+
+const getAllAcademics = asyncHandler(async (req, res) => {
+  const academics = await Academics.find();
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        academics,
+        "Fetched all academic records successfully",
+      ),
+    );
+});
+
+
+const updateCurriculumOverview = asyncHandler(async(req,res)=>{
+
+  const { classRang, numberOfLabes, bordOrCurriculum } = req.body
+
+  const updateData = {}
+
+  if(classRang) updateData.classRang = classRang
+  if(numberOfLabes) updateData.numberOfLabes = numberOfLabes
+  if(bordOrCurriculum) updateData.bordOrCurriculum = bordOrCurriculum
+
+  if(Object.values(updateData).lenght === 0) {
+     throw new ApiError(400, "minimum one field can enter")
+  }
+
+  const updateCurriculumOveriew = await Academics.findOneAndUpdate(
+    {},
+    {
+        $set : {
+          curriculumOverview : updateData
+        }
+    },
+    {
+      runValidators : true,
+      new : true
+    }
+  )
+
+
+    if(!updateCurriculumOveriew) {
+      throw new ApiError(404, "Curriculum Overiew didn't updated")
+    }
+
+
+  return res.status(200).json(new ApiResponse(200, {}, "Update Curriculum Overview Successfully"))
+})
+
 
 
 const updateDepartment = asyncHandler(async (req, res) => {
@@ -54,18 +116,7 @@ const updateDepartment = asyncHandler(async (req, res) => {
 });
 
 
-const getAllAcademics = asyncHandler(async (req, res) => {
-  const academics = await Academics.find();
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        academics,
-        "Fetched all academic records successfully",
-      ),
-    );
-});
+
 
 
 const getAcademicById = asyncHandler(async (req, res) => {

@@ -21,13 +21,12 @@ const curriculumOverviewSchema = new mongoose.Schema(
 
 const teachingMethodologySchema = new mongoose.Schema(
   {
-
           curriculumOverview : {
             type : String,
             required : true
           },
-          TechiningMethodology : {
-            type : [String],
+          techiningMethodology : {
+            type : String,
             required : true
     }
   } , {
@@ -37,7 +36,6 @@ const teachingMethodologySchema = new mongoose.Schema(
 
 const departmentSchema = new mongoose.Schema(
   {
-      department : {
           departmentName : {
             type : String,
             required : true
@@ -46,7 +44,6 @@ const departmentSchema = new mongoose.Schema(
             type : String,
             required : true
           }
-    }
   } , {
       timestamps : true
   }
