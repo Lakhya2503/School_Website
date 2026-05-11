@@ -10,12 +10,7 @@ const createAboutSection = asyncHandler(async(req,res)=>{
       missionVision ,
       principleMessage ,
       campusFacility
-     } = req
-
-     console.log(
-          "req.body" ,req
-     );
-
+     } = req.body
 
      const schoolData = {
         description : schoolHistory.description
@@ -45,23 +40,21 @@ const createAboutSection = asyncHandler(async(req,res)=>{
         message : principleMessage.message
      }
 
-     if(principleMessage.photoUrl) return principleMessageData.photoUrl =  principleMessage.photoUrl
+     if(principleMessage.photoUrl)  principleMessageData.photoUrl =  principleMessage.photoUrl
 
      let campusAndFacility = [];
-
-    if(campusFacility && campusFacility.lenth > 0){
-          campusAndFacility.push(campusAndFacility)
+    if(campusFacility && Object.values(campusFacility).length > 0){
+          campusAndFacility.push(campusFacility)
     }
       else {
         campusAndFacility = []
     }
 
-
      const about = await About.create({
         schoolHistory : schoolData,
         missionVision : missionVisionData,
         principleMessage : principleMessageData,
-        campusFacility : campusFacility
+        campusFacility : campusAndFacility
      })
 
      if(!about) {
@@ -69,7 +62,7 @@ const createAboutSection = asyncHandler(async(req,res)=>{
      }
 
 
-  // return res.status(201).json(new ApiResponse(201, about, "create About section successfully"))
+  return res.status(201).json(new ApiResponse(201, about, "create About section successfully"))
 })
 
 const getAbout = asyncHandler(async(req,res)=>{
@@ -88,27 +81,22 @@ const updateSchoolHistory = asyncHandler(async(req,res)=>{
 
   const updateData = { }
 
-  if(typeof coreValues ===  "string" ) {
-    corevalueArray =  coreValues.split("," )
-    if(corevalueArray.length > 0) {
-      updateData.coreValues = corevalueArray
-    }
-    updateData.coreValues = []
-  }
-
-  if(coreValues.length > 0 ) {
-      updateData.coreValues = coreValues
-  }
-
-
   if(description) updateData.description = description
 
-  if(coreValues.lenth)updateData.vision = vision
-
-  if(Object.values(updateData).length > 0) {
-    throw new ApiError(400, "can not be empty please ensert the value")
+  let corevalueArray = [];
+  if(coreValues && typeof coreValues == "string") {
+    console.log(coreValues);
+    updateData.coreValues =  coreValues.split("," )
+    //  updateData.coreValues = corevalueArray.push(coreValues)
   }
 
+  console.log(updateData);
+
+
+
+  if(Object.values(updateData).length < 0) {
+    throw new ApiError(400, "can not be empty please ensert the value")
+  }
 
   const schoolHistory = await About.findOneAndUpdate(
     {},
@@ -122,7 +110,7 @@ const updateSchoolHistory = asyncHandler(async(req,res)=>{
   }
 
 
-    return res.status(200).json(new ApiError(200, schoolHistory, "Update School History successfully"))
+    return res.status(200).json(new ApiResponse(200, schoolHistory, "Update School History successfully"))
 })
 
 const updateMissionVision = asyncHandler(async(req,res)=>{
@@ -137,7 +125,7 @@ const updateMissionVision = asyncHandler(async(req,res)=>{
   if(mission)  updateData.mission = mission
   if(vision)  updateData.vision = vision
 
-  if(Object.values(updateData).length > 0) {
+  if(Object.values(updateData).length < 0) {
     throw new ApiError(400, "can not be empty please ensert the value")
   }
 
@@ -153,7 +141,7 @@ const updateMissionVision = asyncHandler(async(req,res)=>{
   }
 
 
-    return res.status(200).json(new ApiError(200, missionVision, "Update Mission vision successfully"))
+    return res.status(200).json(new ApiResponse(200, missionVision, "Update Mission vision successfully"))
 })
 
 const updatePrincipleMessage = asyncHandler(async(req,res)=>{
@@ -167,7 +155,7 @@ const updatePrincipleMessage = asyncHandler(async(req,res)=>{
   if(photoUrl)  updateData.photoUrl = photoUrl
   if(message)  updateData.message = message
 
-  if(Object.values(updateData).length > 0) {
+  if(Object.values(updateData).length < 0) {
     throw new ApiError(400, "can not be empty please ensert the value")
   }
 
@@ -183,33 +171,39 @@ const updatePrincipleMessage = asyncHandler(async(req,res)=>{
   }
 
 
-  return res.status(200).json(new ApiResponse(200, updateprincipleMessage, "Update Principle Message succesfully" ))
+  return res.status(200).json(new ApiResponse(200, principlemessage, "Update Principle Message succesfully" ))
 })
 
 const addCampusFacility = asyncHandler(async(req,res)=>{
 
-  const { name,imageUrl, description } = req.body
+  const { name, imageUrl, description } = req.body
 
   const campusFacility =  {
         name,
         description
   }
 
-  if(Object.value(campusFacility).lenth == 0) {
+  if(Object.values(campusFacility).length < 0) {
     throw new ApiError("name and description are required")
   }
+
+  console.log("campuse facility", campusFacility);
+
 
   if(imageUrl)  campusFacility.imageUrl = imageUrl
 
     const campusAndFacility = await About.findOneAndUpdate(
       {},
       {
-          campusFacility : {
-            $push : campusFacility
-          }
+        $push : {
+          campusFacility   : campusFacility
+        }
       },
       { new : true }
     )
+
+    console.log("campusAndFacility",campusAndFacility);
+
 
   if(campusAndFacility.campusFacility < 0) {
       throw new ApiError(404, "didn't add new campus facility")
@@ -229,7 +223,7 @@ const updateCampusFacility = asyncHandler(async(req,res)=>{
         description
   }
 
-  if(Object.value(updateData).lenth == 0) {
+  if(Object.value(updateData).length == 0) {
     throw new ApiError("name and description are required")
   }
 
@@ -260,13 +254,18 @@ const deleteCampusFacility = asyncHandler(async(req,res)=> {
       "campusFacility._id" : facilityId
   })
 
-  if(facility.lenth > 0) {
+  if(!facility) {
+    throw new ApiError(400, "facility didn't find")
+  }
+
+
+  if(facility && facility.length > 0) {
       throw new ApiError(404, "Campus Facility not found")
   }
 
   await About.findOneAndUpdate({},{
       $pull : {
-          campusFacility : { id : facilityId}
+          campusFacility : { _id : facilityId}
       }
   }, { new : true})
 
